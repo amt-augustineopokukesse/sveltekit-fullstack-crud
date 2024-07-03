@@ -1,4 +1,6 @@
 <script>
+    import { authHandlers } from "../../store/store";
+
     let email = "";
     let password = "";
     let confirmPass = "";
@@ -6,10 +8,27 @@
     let register = false;
     let authenticating = false;
 
-    const handleAuthentication = () => {
+    const handleAuthenticate = async () => {
+        if (authenticating) {
+            return;
+        }
         if (!email || !password || (register && !confirmPass)) {
             error = true;
             return;
+        }
+
+        authenticating = true;
+
+        try {
+            if (!register) {
+                await authHandlers.login(email, password);
+            } else {
+                await authHandlers.signup(email, password);
+            }
+        } catch (err) {
+            console.log("There was an auth error", err);
+            error = true;
+            authenticating = false;
         }
     }
 
@@ -38,7 +57,13 @@
             <input bind:value={confirmPass} type="password" placeholder="Confirm Password">
         </label>
         {/if}
-        <button type="button">Submit</button>
+        <button on:click={handleAuthenticate} type="button" class="submitBtn">
+            {#if authenticating}
+                <i class="fa-solid fa-spinner loadingSpinner"></i>
+            {:else}
+                Submit
+            {/if}
+        </button>
     </form>
     <div class="options">
         <p>Or</p>
@@ -203,5 +228,18 @@
     .options div p:last-of-type {
         color: cyan;
         cursor: pointer;
+    }
+
+    .loadingSpinner {
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+        from {
+            transform: rotate(0deg);
+        }
+        to {
+            transform: rotate(360deg);
+        }
     }
 </style>

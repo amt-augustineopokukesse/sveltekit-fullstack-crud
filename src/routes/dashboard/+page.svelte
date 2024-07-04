@@ -3,6 +3,7 @@
     import { authHandlers, authStore } from "../../store/store";
     import { getDoc, doc, setDoc } from "firebase/firestore";
     import TodoItem from "$lib/components/TodoItem.svelte";
+  import toast, { Toaster } from "svelte-french-toast";
 
     let todoList = [];
     let currTodo = "";
@@ -36,6 +37,7 @@
             return i != index;
         });
         todoList = newTodoList;
+
     }
 
     async function saveTodos() {
@@ -48,11 +50,14 @@
                 },
                 { merge: true }
             );
+            toast.success("Todos saved successfully");
         } catch (err) {
-            console.log("There was an error saving your information");
+            toast.error("There was an error saving your information");
         }
     }
 </script>
+
+<Toaster />
 
 {#if !$authStore.loading}
     <div class="mainContainer">

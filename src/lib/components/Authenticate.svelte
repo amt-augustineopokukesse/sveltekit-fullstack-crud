@@ -1,5 +1,6 @@
 <script>
     import { authHandlers } from "../../store/store";
+    import toast, { Toaster } from "svelte-french-toast";
 
     let email = "";
     let password = "";
@@ -22,11 +23,13 @@
         try {
             if (!register) {
                 await authHandlers.login(email, password);
+                toast.success("Login Successful");
             } else {
                 await authHandlers.signup(email, password);
+                toast.success("Signup Successful");
             }
         } catch (err) {
-            console.log("There was an auth error", err);
+            toast.error("There was an auth error", err);
             error = true;
             authenticating = false;
         }
@@ -36,6 +39,8 @@
         register = !register;
     }
 </script>
+
+<Toaster />
 
 <div class="authContainer">
     <form>
